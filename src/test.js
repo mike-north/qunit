@@ -148,7 +148,14 @@ Test.prototype = {
 		config.current = this;
 
 		this.callbackStarted = now();
-
+		const { testId } = config; 
+		if ((typeof testId === 'string' && testId === this.testId) // testId for a single test
+		|| (typeof testId.reduce === 'function' && testId.length > 0 && testId.indexOf(this.testId) < 0) // testId[] for a multiple tests
+		) {
+			this.skip = true;
+			this.assert.expect(0);
+			return;
+		}
 		if ( config.notrycatch ) {
 			runTest( this );
 			return;

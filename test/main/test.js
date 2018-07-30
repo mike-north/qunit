@@ -215,6 +215,34 @@ QUnit.skip( "test blocks are skipped", function( assert ) {
 
 QUnit.skip( "no function" );
 
+
+
+QUnit.module( "Filtering tests after start", {
+	before: function (  ) {
+		const mod = QUnit.config.modules.filter(m => m.name === 'Filtering tests after start')[0];
+		const test = mod.tests.filter(t => t.name.indexOf('#dontskipme') === 0)[0];
+		console.log(test);
+		this.oldTestId = QUnit.config.testId;
+		QUnit.config.testId = [test.testId];
+	},
+	after: function () {
+		QUnit.config.testId = this.oldTestId;
+	}
+}, function (hooks) {
+	QUnit.test( "#dontskipme test blocks check whether they should be skipped immediately before running", function( assert ) {
+		// This test callback won't run, even with broken code
+		assert.ok(true);
+	} );
+	QUnit.test( "#skipme test blocks check whether they should be skipped immediately before running", function( assert ) {
+		// This test callback won't run, even with broken code
+		assert.expect( 1000 );
+		throw "Error";
+	} );
+} );
+
+
+
+
 QUnit.module( "Missing Callbacks" );
 
 QUnit.test( "QUnit.test without a callback logs a descriptive error", function( assert ) {
